@@ -16,6 +16,8 @@ def log_in(page: Page, email: email, password: password) -> None:
 
 def test_register(page: Page) -> None:
     page.goto(shop)
+
+    fake_email = fake.email()
     page.locator(".ico-register").click()
 
     page.locator('#gender-male').click()
@@ -24,13 +26,16 @@ def test_register(page: Page) -> None:
     page.locator('#LastName').click()
     page.locator('#LastName').fill(fake.last_name())
     page.locator('#Email').click()
-    page.locator('#Email').fill(fake.email())
+    page.locator('#Email').fill(fake_email)
     page.locator('#Password').click()
     page.locator('#Password').fill(password)
     page.locator('#ConfirmPassword').click()
     page.locator('#ConfirmPassword').fill(password)
 
     page.locator('#register-button').click()
+
+    expect(page.locator("body")).to_contain_text(fake_email)
+
 
 def test_login(page: Page) -> None:
     page.goto(shop)
