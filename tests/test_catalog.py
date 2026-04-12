@@ -63,9 +63,32 @@ def test_sort(page: Page) -> None:
     is_ascending = all(position[i] <= position[i + 1] for i in range(len(position) - 1))
     assert is_ascending
 
-
 def test_filters(page: Page) -> None:
-    pass
+    page.goto(shop + 'desktops')
+
+    page.get_by_role("link", name="Under").click()
+    for item in page.locator('.item-box').all():
+        price = float(item.locator(".actual-price").text_content())
+        assert price <= 1000
+
+    page.get_by_role("link", name="Remove Filter").click()
+    page.get_by_role("link", name="- 1200.00").click()
+    for item in page.locator('.item-box').all():
+        price = float(item.locator(".actual-price").text_content())
+        assert 1000 <= price <= 1200
+
+    page.get_by_role("link", name="Remove Filter").click()
+    page.get_by_role("link", name="Over").click()
+    for item in page.locator('.item-box').all():
+        price = float(item.locator(".actual-price").text_content())
+        assert price >= 1200
 
 def test_product_card(page: Page) -> None:
-    pass
+    page.goto(shop)
+
+    page.locator('.picture').first.click()
+    expect(page.locator('[itemprop="image"]')).to_be_visible()
+    expect(page.locator('.product-name')).to_be_visible()
+    expect(page.locator('.short-description')).to_be_visible()
+    expect(page.locator('.qty-input')).to_be_visible()
+    expect(page.locator('.add-to-cart-panel').locator('[value="Add to cart"]')).to_be_visible()
