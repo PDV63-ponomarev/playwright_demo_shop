@@ -40,7 +40,15 @@ def test_change_item_in_cart(page: Page) -> None:
 
 
 def test_delete_item_in_cart(page: Page) -> None:
-    pass
+    page.goto(shop + 'books')
+    page.get_by_role("button", name="Add to cart").first.click()
+    expect(page.locator("#topcartlink")).to_contain_text("(1)")
+    page.locator('.cart-label').first.click()
+
+    page.locator("input[name=\"removefromcart\"]").check()
+    page.get_by_role("button", name="Update shopping cart").click()
+    expect(page.locator("body")).to_contain_text("Your Shopping Cart is empty!")
+
 
 def test_summ_price_in_cart(page: Page) -> None:
     pass
