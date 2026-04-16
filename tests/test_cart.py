@@ -26,7 +26,6 @@ def test_change_item_in_cart(page: Page) -> None:
     page.goto(shop + '141-inch-laptop')
     expect(page.locator("#topcartlink")).to_contain_text("(0)")
 
-    price = page.locator("#product-details-form").text_content()
     page.locator("#add-to-cart-button-31").click()
     expect(page.locator("#topcartlink")).to_contain_text("(1)")
 
@@ -50,8 +49,47 @@ def test_delete_item_in_cart(page: Page) -> None:
     expect(page.locator("body")).to_contain_text("Your Shopping Cart is empty!")
 
 
-def test_summ_price_in_cart(page: Page) -> None:
-    pass
-
 def test_making_order(page: Page) -> None:
-    pass
+    page.goto(shop + 'books')
+
+    page.get_by_role("link", name="Fiction", exact=True).click()
+    expect(page).to_have_url('https://demowebshop.tricentis.com/fiction')
+    expect(page.get_by_role("heading", name="Fiction")).to_be_visible()
+    expect(page.get_by_text("24.00")).to_be_visible()
+
+    page.get_by_role("button", name="Add to cart").click()
+    page.locator('.cart-label').first.click()
+    expect(page).to_have_url('https://demowebshop.tricentis.com/cart')
+
+    page.locator("#termsofservice").check()
+    page.get_by_role("button", name="Checkout").click()
+    expect(page).to_have_url('https://demowebshop.tricentis.com/login/checkoutasguest?returnUrl=%2Fcart')
+
+    page.locator(".email").fill('Bob@mail.ru')
+    page.locator(".password").click()
+    page.locator(".password").fill('some_pass')
+    page.locator(".login-button").click()
+    expect(page).to_have_url('https://demowebshop.tricentis.com/cart')
+
+    page.get_by_role("button", name="Checkout").click()
+    page.get_by_role("button", name="close").click()
+    page.locator("#termsofservice").check()
+    page.get_by_role("button", name="Checkout").click()
+    page.get_by_label("Select a billing address from").select_option("4877649")
+    page.get_by_role("button", name="Continue").click()
+    page.get_by_label("Select a shipping address").select_option("4877649")
+    page.get_by_role("button", name="Continue").click()
+    page.get_by_role("radio", name="Next Day Air (40.00)").check()
+    page.get_by_role("button", name="Continue").click()
+    page.get_by_role("radio", name="Purchase Order Purchase Order").check()
+    page.get_by_role("button", name="Continue").click()
+    page.get_by_role("textbox", name="PO Number").click()
+    page.get_by_role("textbox", name="PO Number").fill("20-3-000")
+    page.get_by_role("button", name="Continue").click()
+    page.get_by_role("button", name="Confirm").click()
+    expect(page.locator('.page-body')).to_contain_text("Your order has been successfully processed!")
+    expect(page.locator('.page-body')).to_contain_text("Order number:")
+    page.get_by_role("button", name="Continue").click()
+
+    expect(page).to_have_url('https://demowebshop.tricentis.com/')
+    expect(page.locator("#topcartlink")).to_contain_text("(0)")
