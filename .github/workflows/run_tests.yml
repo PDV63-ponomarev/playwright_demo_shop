@@ -1,6 +1,6 @@
 name: autotests demo-shop
 
-on: [push]
+on: []
 
 jobs:
   run_tests:

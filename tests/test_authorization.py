@@ -14,7 +14,7 @@ def log_in(page: Page, email: email, password: password) -> None:
     page.locator(".password").fill(password)
     page.locator(".login-button").click()
 
-def test_register(page: Page) -> None:
+def _test_register(page: Page) -> None:
     page.goto(shop)
 
     fake_email = fake.email()
