@@ -1,11 +1,19 @@
 from playwright.sync_api import Page, expect
 from faker import Faker
+import pytest
 
 shop = "https://demowebshop.tricentis.com/"
 email = 'Bob@mail.ru'
 password = 'some_pass'
 
 fake = Faker()
+
+@pytest.fixture(scope="function")
+def page(context):
+    # context создается автоматически плагином pytest-playwright
+    page = context.new_page()
+    yield page
+    # page закрывается автоматически после теста
 
 def log_in(page: Page, email: email, password: password) -> None:
     page.locator(".email").click()
@@ -15,7 +23,7 @@ def log_in(page: Page, email: email, password: password) -> None:
     page.locator(".login-button").click()
 
 def _test_register(page: Page) -> None:
-    page.goto(shop)
+    page.goto(shop, wait_until="commit")
 
     fake_email = fake.email()
     page.locator(".ico-register").click()
@@ -38,7 +46,7 @@ def _test_register(page: Page) -> None:
 
 
 def test_login(page: Page) -> None:
-    page.goto(shop)
+    page.goto(shop, wait_until="commit")
     page.locator(".ico-login").click()
 
     log_in(page,email,password)
@@ -46,7 +54,7 @@ def test_login(page: Page) -> None:
     expect(page.locator("body")).to_contain_text(email)
 
 def test_login_fail(page: Page) -> None:
-    page.goto(shop)
+    page.goto(shop, wait_until="commit")
     page.locator(".ico-login").click()
 
     log_in(page,email,'111')
@@ -54,7 +62,7 @@ def test_login_fail(page: Page) -> None:
     expect(page.locator("body")).to_contain_text("Login was unsuccessful.")
 
 def test_forgot_password(page: Page) -> None:
-    page.goto(shop + 'login')
+    page.goto(shop + 'login', wait_until="commit")
     page.locator('.forgot-password').click()
     page.get_by_role("link", name="Forgot password?").click()
     expect(page).to_have_url(shop + 'passwordrecovery')
@@ -66,7 +74,7 @@ def test_forgot_password(page: Page) -> None:
     expect(page.locator("body")).to_contain_text("Email with instructions has been sent to you.")
 
 def test_logout(page: Page) -> None:
-    page.goto(shop)
+    page.goto(shop, wait_until="commit")
     page.locator(".ico-login").click()
 
     log_in(page, email, password)
