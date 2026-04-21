@@ -3,7 +3,7 @@ from playwright.sync_api import Page, expect
 shop = "https://demowebshop.tricentis.com/"
 
 def test_cards_books(page: Page) -> None:
-    page.goto(shop + 'books')
+    page.goto(shop + 'books', wait_until="commit")
     for item in page.locator('.item-box').all():
         expect(item.locator(".picture")).to_be_visible()
         expect(item.locator(".product-title")).to_be_visible()
@@ -11,7 +11,7 @@ def test_cards_books(page: Page) -> None:
         expect(item.locator(".prices")).to_be_visible()
 
 def test_sort(page: Page) -> None:
-    page.goto(shop + 'books')
+    page.goto(shop + 'books', wait_until="commit")
 
     page.locator('#products-orderby').select_option(label="Name: A to Z")
     expect(page.locator('#products-orderby')).to_contain_text("Name: A to Z")
@@ -62,7 +62,7 @@ def test_sort(page: Page) -> None:
     assert is_ascending
 
 def test_filters(page: Page) -> None:
-    page.goto(shop + 'desktops')
+    page.goto(shop + 'desktops', wait_until="commit")
 
     page.get_by_role("link", name="Under").click()
     for item in page.locator('.item-box').all():
@@ -82,7 +82,7 @@ def test_filters(page: Page) -> None:
         assert price >= 1200
 
 def test_product_card(page: Page) -> None:
-    page.goto(shop)
+    page.goto(shop, wait_until="commit")
 
     page.locator('.picture').first.click()
     expect(page.locator('[itemprop="image"]')).to_be_visible()
