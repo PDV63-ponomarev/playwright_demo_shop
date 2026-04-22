@@ -1,41 +1,6 @@
 from playwright.sync_api import Page, expect
 from faker import Faker
 
-
-def test_check_connectivity(page: Page):
-    """Диагностический тест - проверяет, может ли Playwright вообще выйти в интернет."""
-    print("\n=== ДИАГНОСТИКА СОЕДИНЕНИЯ ===")
-
-    # Проверяем example.com (должен работать всегда)
-    try:
-        print("1. Пробуем example.com...")
-        page.goto("https://example.com", timeout=5000)
-        print(f"✅ example.com загружен: {page.title()}")
-    except Exception as e:
-        print(f"❌ example.com НЕ загружен: {e}")
-        raise
-
-    # Проверяем целевой сайт
-    try:
-        print("2. Пробуем demowebshop...")
-        page.goto("https://demowebshop.tricentis.com/", timeout=5000)
-        print(f"✅ demowebshop загружен: {page.title()}")
-    except Exception as e:
-        print(f"❌ demowebshop НЕ загружен: {e}")
-        # Продолжаем, не падаем
-
-    # Проверяем DNS
-    import socket
-    try:
-        ip = socket.gethostbyname('demowebshop.tricentis.com')
-        print(f"3. DNS demowebshop: {ip}")
-    except Exception as e:
-        print(f"❌ DNS ошибка: {e}")
-
-    print("=== КОНЕЦ ДИАГНОСТИКИ ===\n")
-
-
-
 shop = "https://demowebshop.tricentis.com/"
 email = 'Bob@mail.ru'
 password = 'some_pass'
